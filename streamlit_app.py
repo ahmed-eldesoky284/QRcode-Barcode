@@ -9,29 +9,31 @@ import random
 # دالة لتوليد QR Code مع تخصيص اللون والخلفية وإضافة صورة داخل QR Code
 def generate_qr_code(link, color="black", background="white", logo_path=None, logo_size=0.2):
     # توليد QR Code
-    qr_code = qrcode.make(link)
-    
-    # حفظ الـ QR Code كـ PNG في ذاكرة مؤقتة باستخدام BytesIO
-    qr_code_io = io.BytesIO()
-    qr_code.save(qr_code_io, format="PNG")
-    qr_code_io.seek(0)  # إعادة مؤشر الملف إلى البداية
-    
-    # تحويل الصورة إلى PIL
-    qr_code_pil = PILImage.open(qr_code_io)
+    qr_code = qrcode.QRCode(
+        version=1,  # حجم QR code (يمكنك تعديله حسب الحاجة)
+        error_correction=qrcode.constants.ERROR_CORRECT_L,  # مستوى التصحيح
+        box_size=10,  # حجم المربع داخل الـ QR code
+        border=4,  # عرض الحدود
+    )
+    qr_code.add_data(link)
+    qr_code.make(fit=True)
+
+    # تحويل الـ QR Code إلى صورة PIL مع تخصيص اللون والخلفية
+    qr_code_img = qr_code.make_image(fill=color, back_color=background)
     
     # إضافة صورة الشعار داخل الـ QR Code
     if logo_path:
         logo = PILImage.open(logo_path)
         
         # تغيير حجم الشعار بما يتناسب مع حجم QR Code
-        logo_size = int(qr_code_pil.width * logo_size)
+        logo_size = int(qr_code_img.width * logo_size)
         logo = logo.resize((logo_size, logo_size), PILImage.ANTIALIAS)
 
         # تحديد موضع الصورة داخل الـ QR Code
-        logo_position = ((qr_code_pil.width - logo.width) // 2, (qr_code_pil.height - logo.height) // 2)
-        qr_code_pil.paste(logo, logo_position, logo.convert("RGBA"))
+        logo_position = ((qr_code_img.width - logo.width) // 2, (qr_code_img.height - logo.height) // 2)
+        qr_code_img.paste(logo, logo_position, logo.convert("RGBA"))
 
-    return qr_code_pil
+    return qr_code_img
 
 # دالة لتوليد Barcode مع توليد رقم عشوائي إذا لم يتم إدخاله
 def generate_barcode(barcode_number=None):
@@ -56,8 +58,8 @@ if code_type == "QR Code":
     link = st.text_input("أدخل الرابط أو النص لتوليد QR Code:", "")
     
     # تخصيص اللون
-    color = st.color_picker("اختر اللون:", "#000000")
-    background = st.color_picker("اختر اللون الخلفي:", "#ffffff")
+    color = st.color_picker("اختر اللون لـ QR Code:", "#000000")
+    background = st.color_picker("اختر اللون الخلفي لـ QR Code:", "#ffffff")
 
     # رفع الشعار (اختياري)
     logo = st.file_uploader("رفع الشعار لتضمينه داخل QR Code (اختياري)", type=["png", "jpg", "jpeg"])

@@ -1,7 +1,7 @@
 import streamlit as st
 import qrcode
 import io
-from PIL import Image as PILImage
+from PIL import Image as PILImage, ImageDraw, ImageFont
 import random
 import barcode
 from barcode.writer import ImageWriter
@@ -60,6 +60,23 @@ def generate_barcode(barcode_number=None):
     # حفظ الصورة الناتجة
     barcode_filename = 'barcode_image.png'
     barcode_image.save(barcode_filename)
+
+    # إضافة الرقم إلى الصورة
+    barcode_image_pil = PILImage.open(barcode_filename)
+    draw = ImageDraw.Draw(barcode_image_pil)
+    
+    # تحديد نوع الخط وحجمه
+    font = ImageFont.load_default()
+    text_width, text_height = draw.textsize(barcode_number, font=font)
+    
+    # تحديد موقع النص في أسفل الصورة
+    text_position = ((barcode_image_pil.width - text_width) // 2, barcode_image_pil.height - text_height - 10)
+    
+    # إضافة الرقم إلى الصورة
+    draw.text(text_position, barcode_number, font=font, fill="black")
+    
+    # حفظ الصورة المعدلة
+    barcode_image_pil.save(barcode_filename)
     
     return barcode_filename, barcode_number
 

@@ -3,26 +3,21 @@ import pyqrcode
 import barcode
 from barcode.writer import ImageWriter
 from PIL import Image as PILImage
+import io
 
 # دالة لتوليد QR Code مع تخصيص اللون والخلفية وإضافة صورة داخل QR Code
 def generate_qr_code(link, color="black", background="white", logo_path=None, logo_size=0.2):
     # توليد QR Code
     qr_code = pyqrcode.create(link)
     
+    # حفظ QR Code كصورة PNG في ذاكرة مؤقتة
+    qr_code_io = io.BytesIO()
+    qr_code.png(qr_code_io, scale=10, module_color=color, background=background)
+    qr_code_io.seek(0)
+    
     # تحويل QR Code إلى صورة PIL
-    qr_code_pil = PILImage.open(qr_code.png_as_base64_str(scale=10))
+    qr_code_pil = PILImage.open(qr_code_io)
     
-    # تخصيص الألوان
-    qr_code_pil = qr_code_pil.convert("RGB")
-    pixels = qr_code_pil.load()
-    
-    for i in range(qr_code_pil.width):
-        for j in range(qr_code_pil.height):
-            if pixels[i, j] == (0, 0, 0):  # إذا كانت الخلية سوداء
-                pixels[i, j] = color
-            elif pixels[i, j] == (255, 255, 255):  # إذا كانت الخلية بيضاء
-                pixels[i, j] = background
-
     # إضافة صورة شعار داخل QR Code
     if logo_path:
         logo = PILImage.open(logo_path)

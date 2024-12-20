@@ -2,17 +2,15 @@ import streamlit as st
 import qrcode
 import io
 from PIL import Image as PILImage
-import barcode
-from barcode.writer import ImageWriter
 import random
 
 # دالة لتوليد QR Code مع تخصيص لون الخطوط والخلفية وإضافة صورة داخل QR Code
-def generate_qr_code(link, color="black", background="white", logo_path=None, logo_size=0.2):
-    # توليد QR Code
+def generate_qr_code(link, color="black", background="white", logo_path=None, logo_size=0.2, background_image_path=None, box_size=10):
+    # توليد QR Code مع حجم المربع المحدد
     qr_code = qrcode.QRCode(
         version=1,  # حجم QR Code (يمكنك تعديله حسب الحاجة)
         error_correction=qrcode.constants.ERROR_CORRECT_L,  # مستوى التصحيح
-        box_size=10,  # حجم المربع داخل الـ QR Code
+        box_size=box_size,  # حجم المربع داخل الـ QR Code
         border=4,  # عرض الحدود
     )
     qr_code.add_data(link)
@@ -21,6 +19,16 @@ def generate_qr_code(link, color="black", background="white", logo_path=None, lo
     # تحويل الـ QR Code إلى صورة PIL مع تخصيص لون الخطوط والخلفية
     qr_code_img = qr_code.make_image(fill=color, back_color=background)  # تحديد الألوان هنا
     
+    # إضافة صورة خلفية
+    if background_image_path:
+        background_image = PILImage.open(background_image_path)
+
+        # تغيير حجم صورة الخلفية لتناسب حجم الـ QR Code
+        background_image = background_image.resize(qr_code_img.size, PILImage.ANTIALIAS)
+
+        # دمج الخلفية مع QR Code
+        qr_code_img = PILImage.alpha_composite(background_image.convert("RGBA"), qr_code_img.convert("RGBA"))
+
     # إضافة صورة الشعار داخل الـ QR Code
     if logo_path:
         logo = PILImage.open(logo_path)
@@ -64,15 +72,21 @@ if code_type == "QR Code":
     # رفع الشعار (اختياري)
     logo = st.file_uploader("رفع الشعار لتضمينه داخل QR Code (اختياري)", type=["png", "jpg", "jpeg"])
 
+    # رفع صورة الخلفية (اختياري)
+    background_image = st.file_uploader("رفع صورة الخلفية لـ QR Code (اختياري)", type=["png", "jpg", "jpeg"])
+
     # حجم الشعار
     logo_size = st.slider("حجم الشعار داخل QR Code (0 إلى 1)", 0.05, 0.3, 0.2)
 
+    # التحكم في حجم QR Code باستخدام شريط تمرير
+    box_size = st.slider("حجم QR Code (box size)", 5, 20, 10)
+
     if link:
-        # توليد QR Code
-        if logo:
-            qr_code_image = generate_qr_code(link, color, background, logo_path=logo, logo_size=logo_size)
+        # توليد QR Code مع الخلفية والشعار
+        if background_image:
+            qr_code_image = generate_qr_code(link, color, background, logo_path=logo, logo_size=logo_size, background_image_path=background_image, box_size=box_size)
         else:
-            qr_code_image = generate_qr_code(link, color, background)
+            qr_code_image = generate_qr_code(link, color, background, logo_path=logo, logo_size=logo_size, box_size=box_size)
         
         # تحويل الصورة إلى تنسيق يمكن لـ Streamlit التعامل معه
         qr_code_image_path = io.BytesIO()

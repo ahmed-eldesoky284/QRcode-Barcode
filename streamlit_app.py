@@ -49,11 +49,17 @@ def generate_barcode(barcode_number=None):
         # توليد رقم عشوائي للباركود (12 رقمًا)
         barcode_number = ''.join([str(random.randint(0, 9)) for _ in range(12)])
     
+    # تحديد نوع الباركود (مثال: 'ean13')
     barcode_format = barcode.get_barcode_class('ean13')
+    
+    # توليد الباركود باستخدام ImageWriter لكتابة الصورة
     barcode_image = barcode_format(barcode_number, writer=ImageWriter())
-    barcode_filename = 'barcode_image'
+    
+    # حفظ الصورة الناتجة
+    barcode_filename = 'barcode_image.png'
     barcode_image.save(barcode_filename)
-    return f"{barcode_filename}.png", barcode_number
+    
+    return barcode_filename, barcode_number
 
 # واجهة المستخدم
 st.title("توليد QR Code أو Barcode")

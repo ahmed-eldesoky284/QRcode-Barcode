@@ -3,6 +3,8 @@ import qrcode
 import io
 from PIL import Image as PILImage
 import random
+import barcode
+from barcode.writer import ImageWriter
 
 # دالة لتوليد QR Code مع تخصيص لون الخطوط والخلفية وإضافة صورة داخل QR Code
 def generate_qr_code(link, color="black", background="white", logo_path=None, logo_size=0.2, background_image_path=None, box_size=10):

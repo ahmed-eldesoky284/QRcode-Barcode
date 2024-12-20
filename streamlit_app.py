@@ -19,7 +19,7 @@ def generate_qr_code(link, color="black", background="white", logo_path=None, lo
     qr_code.make(fit=True)
 
     # تحويل الـ QR Code إلى صورة PIL مع تخصيص اللون والخلفية
-    qr_code_img = qr_code.make_image(fill=color, back_color=background)
+    qr_code_img = qr_code.make_image(fill=color, back_color=background)  # تحديد الألوان هنا
     
     # إضافة صورة الشعار داخل الـ QR Code
     if logo_path:
@@ -58,8 +58,8 @@ if code_type == "QR Code":
     link = st.text_input("أدخل الرابط أو النص لتوليد QR Code:", "")
     
     # تخصيص اللون
-    color = st.color_picker("اختر اللون لـ QR Code:", "#000000")
-    background = st.color_picker("اختر اللون الخلفي لـ QR Code:", "#ffffff")
+    color = st.color_picker("اختر اللون لـ QR Code:", "#000000")  # اللون الأساسي لـ QR Code
+    background = st.color_picker("اختر اللون الخلفي لـ QR Code:", "#ffffff")  # اللون الخلفي
 
     # رفع الشعار (اختياري)
     logo = st.file_uploader("رفع الشعار لتضمينه داخل QR Code (اختياري)", type=["png", "jpg", "jpeg"])

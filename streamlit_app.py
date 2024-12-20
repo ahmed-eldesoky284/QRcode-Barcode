@@ -26,20 +26,6 @@ def generate_qr_code(link, color="black", background="white", logo_path=None, lo
         # تغيير حجم الشعار بما يتناسب مع حجم QR Code
         logo_size = int(qr_code_pil.width * logo_size)
         logo = logo.resize((logo_size, logo_size), PILImage.ANTIALIAS)
-        
-        # تحويل الشعار إلى اللون المخصص
-        logo = logo.convert("RGBA")
-        logo_data = logo.getdata()
-        new_logo_data = []
-
-        for item in logo_data:
-            # إذا كانت البكسلات غير شفافة (RGBA) نغير اللون
-            if item[3] > 0:  # إذا كانت البكسلات غير شفافة
-                new_logo_data.append((int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16), item[3]))
-            else:
-                new_logo_data.append(item)
-        
-        logo.putdata(new_logo_data)
 
         # تحديد موضع الصورة داخل الـ QR Code
         logo_position = ((qr_code_pil.width - logo.width) // 2, (qr_code_pil.height - logo.height) // 2)

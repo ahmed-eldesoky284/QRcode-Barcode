@@ -19,7 +19,7 @@ def generate_qr_code(link, color="black", background="white", logo_path=None, lo
     # تحويل الـ QR Code إلى صورة PIL مع تخصيص لون الخطوط والخلفية
     qr_code_img = qr_code.make_image(fill=color, back_color=background)  # تحديد الألوان هنا
     
-    # إضافة صورة خلفية
+    # إضافة صورة الخلفية
     if background_image_path:
         background_image = PILImage.open(background_image_path)
 

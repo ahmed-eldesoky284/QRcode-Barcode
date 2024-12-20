@@ -1,55 +1,19 @@
 import streamlit as st
-import qrcode
-import io
-from PIL import Image as PILImage, ImageDraw, ImageFont
-import random
 import barcode
 from barcode.writer import ImageWriter
+from IPython.display import Image as IPImage
+import random
+import io
 
-# دالة لتوليد QR Code مع تخصيص لون الخطوط والخلفية وإضافة صورة داخل QR Code
-def generate_qr_code(link, color="black", background="white", logo_path=None, logo_size=0.2, background_image_path=None, box_size=10):
-    # توليد QR Code مع حجم المربع المحدد
-    qr_code = qrcode.QRCode(
-        version=1,  # حجم QR Code (يمكنك تعديله حسب الحاجة)
-        error_correction=qrcode.constants.ERROR_CORRECT_L,  # مستوى التصحيح
-        box_size=box_size,  # حجم المربع داخل الـ QR Code
-        border=4,  # عرض الحدود
-    )
-    qr_code.add_data(link)
-    qr_code.make(fit=True)
+# دالة لتوليد رقم عشوائي مكون من 12 رقمًا
+def generate_barcode_number():
+    return ''.join([str(random.randint(0, 9)) for _ in range(12)])
 
-    # تحويل الـ QR Code إلى صورة PIL مع تخصيص لون الخطوط والخلفية
-    qr_code_img = qr_code.make_image(fill=color, back_color=background)  # تحديد الألوان هنا
-
-    # إضافة صورة الخلفية
-    if background_image_path:
-        background_image = PILImage.open(background_image_path)
-
-        # تغيير حجم صورة الخلفية لتناسب حجم الـ QR Code
-        background_image = background_image.resize(qr_code_img.size, PILImage.ANTIALIAS)
-
-        # دمج الخلفية مع QR Code
-        qr_code_img = PILImage.alpha_composite(background_image.convert("RGBA"), qr_code_img.convert("RGBA"))
-
-    # إضافة صورة الشعار داخل الـ QR Code
-    if logo_path:
-        logo = PILImage.open(logo_path)
-        
-        # تغيير حجم الشعار بما يتناسب مع حجم QR Code
-        logo_size = int(qr_code_img.width * logo_size)
-        logo = logo.resize((logo_size, logo_size), PILImage.ANTIALIAS)
-
-        # تحديد موضع الصورة داخل الـ QR Code
-        logo_position = ((qr_code_img.width - logo.width) // 2, (qr_code_img.height - logo.height) // 2)
-        qr_code_img.paste(logo, logo_position, logo.convert("RGBA"))
-
-    return qr_code_img
-
-# دالة لتوليد Barcode مع توليد رقم عشوائي إذا لم يتم إدخاله
+# دالة لتوليد Barcode
 def generate_barcode(barcode_number=None):
     if not barcode_number:
         # توليد رقم عشوائي للباركود (12 رقمًا)
-        barcode_number = ''.join([str(random.randint(0, 9)) for _ in range(12)])
+        barcode_number = generate_barcode_number()
     
     # تحديد نوع الباركود (مثال: 'ean13')
     barcode_format = barcode.get_barcode_class('ean13')
@@ -58,26 +22,9 @@ def generate_barcode(barcode_number=None):
     barcode_image = barcode_format(barcode_number, writer=ImageWriter())
     
     # حفظ الصورة الناتجة
-    barcode_filename = 'barcode_image.png'
+    barcode_filename = 'barcode_image'
     barcode_image.save(barcode_filename)
 
-    # إضافة الرقم إلى الصورة
-    barcode_image_pil = PILImage.open(barcode_filename)
-    draw = ImageDraw.Draw(barcode_image_pil)
-    
-    # تحديد نوع الخط وحجمه
-    font = ImageFont.load_default()
-    text_width, text_height = draw.textsize(barcode_number, font=font)
-    
-    # تحديد موقع النص في أسفل الصورة
-    text_position = ((barcode_image_pil.width - text_width) // 2, barcode_image_pil.height - text_height - 10)
-    
-    # إضافة الرقم إلى الصورة (مرة واحدة فقط)
-    draw.text(text_position, barcode_number, font=font, fill="black")
-    
-    # حفظ الصورة المعدلة
-    barcode_image_pil.save(barcode_filename)
-    
     return barcode_filename, barcode_number
 
 # واجهة المستخدم
@@ -138,13 +85,13 @@ elif code_type == "Barcode":
     barcode_file, barcode_number_generated = generate_barcode(barcode_number if barcode_number else None)
     
     # عرض Barcode
-    st.image(barcode_file)
+    st.image(f'{barcode_file}.png')  # عرض الصورة مباشرة
     
     # عرض الرقم الذي تم توليده
-    st.write(f"رقم الباركود الذي تم توليده: {barcode_number_generated}")
+    st.write(f"الرقم الذي تم توليده للباركود هو: {barcode_number_generated}")
 
     # تحميل الصورة الناتجة
-    with open(barcode_file, "rb") as barcode_image:
+    with open(f'{barcode_file}.png', "rb") as barcode_image:
         barcode_image_bytes = barcode_image.read()
 
     st.download_button(

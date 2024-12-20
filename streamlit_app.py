@@ -45,11 +45,17 @@ def generate_qr_code(link, color="black", background="white", logo_path=None, lo
 
     return qr_code_img
 
-# دالة لتوليد Barcode مع توليد رقم عشوائي إذا لم يتم إدخاله
+
+
+# دالة لتوليد رقم عشوائي للباركود (12 رقمًا)
+def generate_barcode_number():
+    return ''.join([str(random.randint(0, 9)) for _ in range(12)])
+
+# دالة لتوليد Barcode مع الرقم داخل الصورة
 def generate_barcode(barcode_number=None):
     if not barcode_number:
         # توليد رقم عشوائي للباركود (12 رقمًا)
-        barcode_number = ''.join([str(random.randint(0, 9)) for _ in range(12)])
+        barcode_number = generate_barcode_number()
     
     # تحديد نوع الباركود (مثال: 'ean13')
     barcode_format = barcode.get_barcode_class('ean13')
@@ -58,11 +64,11 @@ def generate_barcode(barcode_number=None):
     barcode_image = barcode_format(barcode_number, writer=ImageWriter())
     
     # حفظ الصورة الناتجة
-    barcode_filename = 'barcode_image.png'
+    barcode_filename = 'barcode_image'
     barcode_image.save(barcode_filename)
 
     # إضافة الرقم إلى الصورة
-    barcode_image_pil = PILImage.open(barcode_filename)
+    barcode_image_pil = PILImage.open(f'{barcode_filename}.png')
     draw = ImageDraw.Draw(barcode_image_pil)
     
     # تحديد نوع الخط وحجمه
@@ -76,9 +82,18 @@ def generate_barcode(barcode_number=None):
     draw.text(text_position, barcode_number, font=font, fill="black")
     
     # حفظ الصورة المعدلة
-    barcode_image_pil.save(barcode_filename)
+    barcode_image_pil.save(f'{barcode_filename}_with_text.png')
     
-    return barcode_filename, barcode_number
+    return f'{barcode_filename}_with_text.png', barcode_number
+
+# توليد Barcode
+barcode_filename_with_text, barcode_number = generate_barcode()
+
+# عرض الباركود مع الرقم
+display(IPImage(filename=barcode_filename_with_text))
+
+# عرض الرقم المولد
+print(f"الرقم الذي تم توليده للباركود هو: {barcode_number}")
 
 # واجهة المستخدم
 st.title("توليد QR Code أو Barcode")

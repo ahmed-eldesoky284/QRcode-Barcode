@@ -45,8 +45,6 @@ def generate_qr_code(link, color="black", background="white", logo_path=None, lo
 
     return qr_code_img
 
-
-
 # دالة لتوليد رقم عشوائي للباركود (12 رقمًا)
 def generate_barcode_number():
     return ''.join([str(random.randint(0, 9)) for _ in range(12)])
@@ -86,15 +84,6 @@ def generate_barcode(barcode_number=None):
     
     return f'{barcode_filename}_with_text.png', barcode_number
 
-# توليد Barcode
-barcode_filename_with_text, barcode_number = generate_barcode()
-
-# عرض الباركود مع الرقم في تطبيق Streamlit
-st.image(barcode_filename_with_text)
-
-# عرض الرقم المولد
-st.write(f"الرقم الذي تم توليده للباركود هو: {barcode_number}")
-
 # واجهة المستخدم
 st.title("توليد QR Code أو Barcode")
 
@@ -128,7 +117,7 @@ if code_type == "QR Code":
         else:
             qr_code_image = generate_qr_code(link, color, background, logo_path=logo, logo_size=logo_size, box_size=box_size)
         
-        # تحويل الصورة إلى تنسيق يمكن لـ Streamlit التعامل معه
+        # تحويل الصورة إلى بايتات
         qr_code_image_path = io.BytesIO()
         qr_code_image.save(qr_code_image_path, format="PNG")
         qr_code_image_path.seek(0)

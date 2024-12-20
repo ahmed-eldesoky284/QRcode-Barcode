@@ -63,17 +63,17 @@ def generate_barcode(barcode_number=None):
 
     # إضافة الرقم إلى الصورة
     barcode_image_pil = PILImage.open(barcode_filename)
-    text_width, text_height = draw.textsize(barcode_number, font=font)
+    draw = ImageDraw.Draw(barcode_image_pil)
     
     # تحديد نوع الخط وحجمه
     font = ImageFont.load_default()
-    draw.text(text_position, barcode_number, font=font, fill="black")
+    text_width, text_height = draw.textsize(barcode_number, font=font)
     
     # تحديد موقع النص في أسفل الصورة
     text_position = ((barcode_image_pil.width - text_width) // 2, barcode_image_pil.height - text_height - 10)
     
     # إضافة الرقم إلى الصورة
-    
+    draw.text(text_position, barcode_number, font=font, fill="black")
     
     # حفظ الصورة المعدلة
     barcode_image_pil.save(barcode_filename)

@@ -74,13 +74,14 @@ if code_type == "QR Code":
         else:
             qr_code_image = generate_qr_code(link, color, background)
         
-        st.image(qr_code_image)
-
-        # تحميل الصورة الناتجة
+        # تحويل الصورة إلى تنسيق يمكن لـ Streamlit التعامل معه
         qr_code_image_path = io.BytesIO()
         qr_code_image.save(qr_code_image_path, format="PNG")
         qr_code_image_path.seek(0)
-        
+
+        st.image(qr_code_image_path)
+
+        # تحميل الصورة الناتجة
         st.download_button(
             label="تحميل QR Code",
             data=qr_code_image_path,

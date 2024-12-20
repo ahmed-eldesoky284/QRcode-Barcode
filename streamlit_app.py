@@ -89,11 +89,11 @@ def generate_barcode(barcode_number=None):
 # توليد Barcode
 barcode_filename_with_text, barcode_number = generate_barcode()
 
-# عرض الباركود مع الرقم
-display(IPImage(filename=barcode_filename_with_text))
+# عرض الباركود مع الرقم في تطبيق Streamlit
+st.image(barcode_filename_with_text)
 
 # عرض الرقم المولد
-print(f"الرقم الذي تم توليده للباركود هو: {barcode_number}")
+st.write(f"الرقم الذي تم توليده للباركود هو: {barcode_number}")
 
 # واجهة المستخدم
 st.title("توليد QR Code أو Barcode")

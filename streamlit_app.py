@@ -1,24 +1,24 @@
 import streamlit as st
 import pyqrcode
+import io
+from PIL import Image as PILImage
 import barcode
 from barcode.writer import ImageWriter
-from PIL import Image as PILImage
-import io
 
 # دالة لتوليد QR Code مع تخصيص اللون والخلفية وإضافة صورة داخل QR Code
 def generate_qr_code(link, color="black", background="white", logo_path=None, logo_size=0.2):
     # توليد QR Code
     qr_code = pyqrcode.create(link)
     
-    # حفظ QR Code كصورة PNG في ذاكرة مؤقتة
+    # حفظ الـ QR Code كـ PNG في ذاكرة مؤقتة باستخدام BytesIO
     qr_code_io = io.BytesIO()
     qr_code.png(qr_code_io, scale=10, module_color=color, background=background)
-    qr_code_io.seek(0)
+    qr_code_io.seek(0)  # إعادة مؤشر الملف إلى البداية
     
-    # تحويل QR Code إلى صورة PIL
+    # تحويل الصورة إلى PIL
     qr_code_pil = PILImage.open(qr_code_io)
     
-    # إضافة صورة شعار داخل QR Code
+    # إضافة صورة الشعار داخل الـ QR Code
     if logo_path:
         logo = PILImage.open(logo_path)
         

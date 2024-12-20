@@ -63,7 +63,7 @@ def generate_barcode(barcode_number=None):
 
     # إضافة الرقم إلى الصورة
     barcode_image_pil = PILImage.open(barcode_filename)
-    text_width, text_height = draw.ImageDraw.Draw(barcode_image_pil)
+    text_width, text_height = draw.textsize(barcode_number, font=font)
     
     # تحديد نوع الخط وحجمه
     font = ImageFont.load_default()

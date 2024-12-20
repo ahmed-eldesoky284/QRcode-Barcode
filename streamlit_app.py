@@ -6,19 +6,19 @@ import barcode
 from barcode.writer import ImageWriter
 import random
 
-# دالة لتوليد QR Code مع تخصيص اللون والخلفية وإضافة صورة داخل QR Code
+# دالة لتوليد QR Code مع تخصيص لون الخطوط والخلفية وإضافة صورة داخل QR Code
 def generate_qr_code(link, color="black", background="white", logo_path=None, logo_size=0.2):
     # توليد QR Code
     qr_code = qrcode.QRCode(
-        version=1,  # حجم QR code (يمكنك تعديله حسب الحاجة)
+        version=1,  # حجم QR Code (يمكنك تعديله حسب الحاجة)
         error_correction=qrcode.constants.ERROR_CORRECT_L,  # مستوى التصحيح
-        box_size=10,  # حجم المربع داخل الـ QR code
+        box_size=10,  # حجم المربع داخل الـ QR Code
         border=4,  # عرض الحدود
     )
     qr_code.add_data(link)
     qr_code.make(fit=True)
 
-    # تحويل الـ QR Code إلى صورة PIL مع تخصيص اللون والخلفية
+    # تحويل الـ QR Code إلى صورة PIL مع تخصيص لون الخطوط والخلفية
     qr_code_img = qr_code.make_image(fill=color, back_color=background)  # تحديد الألوان هنا
     
     # إضافة صورة الشعار داخل الـ QR Code
@@ -58,7 +58,7 @@ if code_type == "QR Code":
     link = st.text_input("أدخل الرابط أو النص لتوليد QR Code:", "")
     
     # تخصيص اللون
-    color = st.color_picker("اختر اللون لـ QR Code:", "#000000")  # اللون الأساسي لـ QR Code
+    color = st.color_picker("اختر لون الخطوط لـ QR Code:", "#000000")  # اللون الأساسي لـ QR Code
     background = st.color_picker("اختر اللون الخلفي لـ QR Code:", "#ffffff")  # اللون الخلفي
 
     # رفع الشعار (اختياري)
